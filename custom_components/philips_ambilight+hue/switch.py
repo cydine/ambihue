@@ -110,7 +110,13 @@ class AmbiHue(SwitchDevice):
                 return False
             resp = self._session.post(BASE_URL.format(self._host, path), data=json.dumps(data), verify=False, auth=HTTPDigestAuth(self._user, self._password), timeout=TIMEOUT)
             self.on = True
-            return json.loads(resp.text)
+            if resp.text:
+                return json.loads(resp.text)
+            else:
+                if resp.status_code == 200:
+                    return True
+                else:
+                    return False
         except requests.exceptions.RequestException as err:
             self._connfail = CONNFAILCOUNT
             self.on = False
